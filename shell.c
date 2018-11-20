@@ -6,7 +6,7 @@
 char * readline(){
   char * str = malloc(100);
   //printf("$");
-  scanf("%s",str);
+  scanf(str);
 
   return str;
 }
