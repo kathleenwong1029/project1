@@ -5,19 +5,22 @@
 
 char * readline(){
   char * str = malloc(100);
-  //printf("$");
-  scanf(str);
-
+  fgets(str, sizeof(str), stdin);
+  //printf("%s", str);
   return str;
 }
 
 char ** run(char * line){
     char * arg = malloc(sizeof(line));
-    strcpy(arg,line);
+    strcpy(arg , line);
+
     char ** args = calloc(10, sizeof(line));
     int i = 0;
-    while(i<10){
-      printf("%s\n",args[i]);
+    while(line){
+      arg = strsep(&line, " ");
+      args[i]= arg;
+
+      //printf("%s\n",args[i]);
       i++;
     }
     return args;
@@ -27,12 +30,9 @@ char ** run(char * line){
 int main(){
   char ** args = run(readline());
 
-  int a = fork();
-  if(!a){
-    execvp(args[0],args);
-  }
-  else{
+  //int a = fork();
 
-  }
+  //  execvp(args[0],args);
+
   return 0;
 }
