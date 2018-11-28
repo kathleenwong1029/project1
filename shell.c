@@ -19,7 +19,7 @@ char ** run(char * line){
     while(line){
       arg = strsep(&line, " ");
       args[i]= arg;
-
+    
       //printf("%s\n",args[i]);
       i++;
     }
@@ -30,9 +30,14 @@ char ** run(char * line){
 int main(){
   char ** args = run(readline());
 
-  //int a = fork();
-
-  //  execvp(args[0],args);
+  int a = fork();
+  if(!a){
+    execvp(args[0],args);
+    exit(1);}
+  else{
+    int p,status;
+    p = wait(&status);
+  }
 
   return 0;
 }
