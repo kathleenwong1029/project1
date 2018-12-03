@@ -2,8 +2,10 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
-int semi = 0;
 
+//Arguments: no arguments
+//Function: reads from standard in sets it equal to str
+//Return value : returns str
 char * readline(){
   char * str = malloc(100);
   fgets(str, 100, stdin);
@@ -11,38 +13,34 @@ char * readline(){
   return str;
 }
 
+//Arguments: line is equal to stdin
+//Function: seperates line by spaces
+//Return value : returns array of strings containing each command
 char ** parse_args(char * line){
-  //printf("%s\n", line);
+
     char * arg = malloc(sizeof(char *));
-    //strcpy(arg , line);
+
     char ** args = calloc(10, sizeof(char*));
     int i = 0;
 
     while(line){
-      arg = strsep(&line, ";");
+      arg = strsep(&line, " ");
       args[i]= arg;
-    //  printf("%s\n",args[i]);
-    //  printf("%d\n",i);
       i ++;
     }
-    //i = 0;
-    // printf("%s\n",args[0]);
-    // printf("%s\n",args[1]);
-
-    //printf("%s\n",line1);
-    // while(args[i]){
-    //   arg = strsep(args, " ");
-    //   args[i]= arg;
-    //   //printf("%s\n",args[i]);
-    //   i++;
-    // }
     return args;
 }
 
+//Arguments: takes char pointer to requested directory change
+//Function: changes directory to pointer given
+//Return value : void
 void change_d ( char * dir){
     chdir(dir);
 }
 
+//Arguments: array of strings containing commands
+//Function: checks for exit or cd, forks and execute commands
+//Return value : void
 void run (char ** args){
   if(strcmp(args[0], "exit")==0){
     exit(0);
@@ -71,52 +69,45 @@ void run (char ** args){
 //
 // }
 
+//Arguments: nada
+//Function: if there is a semicolon, splits args into two different
+//string arrays to execute
+//Return value : void
 int main(){
   while(1){
   char * cdir = malloc(100);
   printf("%s:$",getcwd(cdir,100));
 
    char ** args = parse_args(readline());
-   int i= 0;
+   int i =0;
+   int j =0;
+   int semis=0;
 
-   char * line1 = malloc(100);
-   char * line2 = malloc(100);
-   strcpy(line1,args[0]);
-   strcpy(line2,args[1]);
+   char ** c1 = calloc(10, sizeof(char*));
+   char ** c2 = calloc(10, sizeof(char*));
 
-   char ** c1 = malloc(10 * sizeof(char*));
-   char ** c2 = malloc(10 * sizeof(char*));
-
-   printf("%s\n",args[0]);
-   printf("%s\n",args[1]);
-   while(line1){
-    c1[i]= strsep(&line1, " ");
-    i++;
-  }
-    c1[i-1]= NULL;
-    // printf("%s\n",c1[0]);
-    // printf("%s\n",c1[1]);
-    // printf("%s\n",c1[2]);
-    i =0;
-    while(line2){
-     c2[i-1]= strsep(&line2, " ");
-     i++;
+   while(args[i]){
+     if (semis == 0) {
+				if (strcmp(args[i], ";") == 0) {
+					semis = 1;
+				}
+				else {
+					c1[i] = args[i];
+				}
+			}
+			if (semis == 1 && strcmp(args[i], ";") != 0) {
+				c2[j] = args[i];
+				j++;
+			}
+			i++;
    }
-   printf("%s\n",c2[0]);
-   printf("%s\n",c2[1]);
-   printf("%s\n",c2[2]);
+   run(c1);
 
-
-  // if(semi){
-     run(c1);
+   if(semis==1){
      run(c2);
-     free(c1);
-     free(c2);
-     free(args);
-  // }
-  // else{
-  //   run(args);
-  // }
+   }
+
+   free(args);
 
 }
 }
