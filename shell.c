@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+int semi = 0;
 
 char * readline(){
   char * str = malloc(100);
@@ -16,19 +17,17 @@ char ** parse_args(char * line){
     //strcpy(arg , line);
     char ** args = calloc(10, sizeof(char*));
     int i = 0;
-    int semi = 0;
+
     while(line){
-      // if(strstr(line,";")==0){
-      //   semi +=1;
-      // }
-      args[i]= strsep(&line, ";");
+      arg = strsep(&line, ";");
+      args[i]= arg;
     //  printf("%s\n",args[i]);
     //  printf("%d\n",i);
       i ++;
     }
-    i = 0;
-    printf("%s\n",args[0]);
-    printf("%s\n",args[1]);
+    //i = 0;
+    // printf("%s\n",args[0]);
+    // printf("%s\n",args[1]);
 
     //printf("%s\n",line1);
     // while(args[i]){
@@ -77,31 +76,47 @@ int main(){
   char * cdir = malloc(100);
   printf("%s:$",getcwd(cdir,100));
 
-  char ** args = parse_args(readline());
-   int i,j, semi= 0;
+   char ** args = parse_args(readline());
+   int i= 0;
+
+   char * line1 = malloc(100);
+   char * line2 = malloc(100);
+   strcpy(line1,args[0]);
+   strcpy(line2,args[1]);
 
    char ** c1 = malloc(10 * sizeof(char*));
-   char ** c2 = calloc(10, sizeof(char*));
+   char ** c2 = malloc(10 * sizeof(char*));
 
-   while(args[i]){
-
-    c1[i]= strsep(&args[i], " ");
+   printf("%s\n",args[0]);
+   printf("%s\n",args[1]);
+   while(line1){
+    c1[i]= strsep(&line1, " ");
     i++;
   }
+    c1[i-1]= NULL;
+    // printf("%s\n",c1[0]);
+    // printf("%s\n",c1[1]);
+    // printf("%s\n",c1[2]);
+    i =0;
+    while(line2){
+     c2[i-1]= strsep(&line2, " ");
+     i++;
+   }
+   printf("%s\n",c2[0]);
+   printf("%s\n",c2[1]);
+   printf("%s\n",c2[2]);
 
-  int copy ;
-  for(copy = 0 ; copy < j ;copy ++){
-    printf("%s\n", "b");
-    strcpy(c1[copy],args[copy]);
-    printf("%s\n",c1[copy]);
-  }
-  for(copy = j + 1 ; copy < sizeof(args) ;copy ++){
-    strcpy(c2[copy],args[copy]);
-  }
-  if(semi){
-    run(c1);
-    run(c2);
-  }
+
+  // if(semi){
+     run(c1);
+     run(c2);
+     free(c1);
+     free(c2);
+     free(args);
+  // }
+  // else{
+  //   run(args);
+  // }
 
 }
 }
