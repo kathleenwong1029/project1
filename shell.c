@@ -16,12 +16,27 @@ char ** parse_args(char * line){
     //strcpy(arg , line);
     char ** args = calloc(10, sizeof(char*));
     int i = 0;
+    int semi = 0;
     while(line){
-      arg = strsep(&line, " ");
-      args[i]= arg;
-      //printf("%s\n",args[i]);
-      i++;
+      // if(strstr(line,";")==0){
+      //   semi +=1;
+      // }
+      args[i]= strsep(&line, ";");
+    //  printf("%s\n",args[i]);
+    //  printf("%d\n",i);
+      i ++;
     }
+    i = 0;
+    printf("%s\n",args[0]);
+    printf("%s\n",args[1]);
+
+    //printf("%s\n",line1);
+    // while(args[i]){
+    //   arg = strsep(args, " ");
+    //   args[i]= arg;
+    //   //printf("%s\n",args[i]);
+    //   i++;
+    // }
     return args;
 }
 
@@ -48,6 +63,14 @@ void run (char ** args){
   }
 }
 
+// void pipey(char * readend,char * writeend){
+//   int pipe1[2];
+//   read(pipe1[0],readend,sizeof(readend));
+//   write(pipe1[1],writeend,sizeof(writeend));
+//   close(fd[0]);
+//   close(fd[1]);
+//
+// }
 
 int main(){
   while(1){
@@ -57,33 +80,28 @@ int main(){
   char ** args = parse_args(readline());
    int i,j, semi= 0;
 
-   char ** c1 = (char **)calloc(10, sizeof(char*));
-   char ** c2 = (char **)calloc(10, sizeof(char*));
+   char ** c1 = malloc(10 * sizeof(char*));
+   char ** c2 = calloc(10, sizeof(char*));
 
    while(args[i]){
-    if(strstr(args[i],";")){
-      semi +=1;
-      j = i;
-      printf("%d\n",j);
-    }
+
+    c1[i]= strsep(&args[i], " ");
     i++;
   }
+
   int copy ;
   for(copy = 0 ; copy < j ;copy ++){
-    printf("%s\n", args[copy]);
+    printf("%s\n", "b");
     strcpy(c1[copy],args[copy]);
     printf("%s\n",c1[copy]);
   }
-  // for(copy = j + 1 ; copy < sizeof(args) ;copy ++){
-  //   strcpy(c2[copy],args[copy]);
-  // }
-  // if(semi){
-  //   run(c1);
-  //   run(c2);
-  // }
-  // else{
-  //   run(args);
-  // }
-  run(args);
+  for(copy = j + 1 ; copy < sizeof(args) ;copy ++){
+    strcpy(c2[copy],args[copy]);
+  }
+  if(semi){
+    run(c1);
+    run(c2);
+  }
+
 }
 }
