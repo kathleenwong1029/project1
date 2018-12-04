@@ -2,6 +2,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#define READ 0
+#define WRITE 1
+#include <fcntl.h>
 
 //Arguments: no arguments
 //Function: reads from standard in sets it equal to str
@@ -60,6 +63,28 @@ void run (char ** args){
   }
 }
 
+//Arguments: two strings arrays containg args before and after >
+//Function: redirects the output from char ** file 1 into newly created file
+//Return value : void
+void reout(char ** file1, char ** file2){
+  int fd = open(file2[0], O_CREAT | O_WRONLY, 0666);
+  int temp = dup(1);
+  dup2(fd, WRITE);
+  run(file1);
+  dup2(temp, WRITE);
+}
+
+//Arguments: two strings arrays containg args before and after >
+//Function: redirects the contents from char ** file 2 into commands
+//Return value : void
+void rein(char ** file1, char ** file2){
+  int fd = open(file2[0], O_RDONLY, 0666);
+  int temp = dup(0);
+  dup2(fd, READ);
+  run(file1);
+  dup2(temp, READ);
+}
+
 //Arguments: readend(left end of pipe), writeend(right end of pipe)
 //Function: redirects the output of the readend into that of the writeend
 //and then executes the writeend
@@ -107,11 +132,14 @@ int main(){
    int i =0;
    int j =0;
    int semis=0;
+   int in =0;
+   int out =0;
+   int s =0;
    int counter = 0;
    //find size of args
-   while(args[counter]){
-     counter ++;
-   }
+   // while(args[counter]){
+   //   counter ++;
+   // }
    char ** c1 = calloc(10, sizeof(char*));
    char ** c2 = calloc(10, sizeof(char*));
 
@@ -120,21 +148,45 @@ int main(){
    				if (strcmp(args[i], ";") == 0) {
    					semis = 1;
    				}
+          else if (strcmp(args[i], ">") == 0) {
+   				   out = 1;
+             s=1;
+   				}
+          else if (strcmp(args[i], "<") == 0) {
+   				     in= 1;
+               s=1;
+   				}
    				else {
    					c1[i] = args[i];
    				}
    			}
-   			if (semis == 1 && strcmp(args[i], ";") != 0) {
+   			if ((semis == 1 && strcmp(args[i], ";") != 0) | (in == 1 && strcmp(args[i], "<") != 0) | (out == 1 && strcmp(args[i], ">") != 0)){
    				c2[j] = args[i];
    				j++;
    			}
    			i++;
       }
-      run(c1);
 
-      if(semis==1){
+    // printf("%s\n",c1[0]);
+    // printf("%s\n",c1[1]);
+    // printf("%s\n",c1[2]);
+    // printf("%s\n",c2[0]);
+    // printf("%s\n",c2[1]);
+    // printf("%s\n",c2[2]);
+
+    if(out==1){
+      reout(c1,c2);
+    }
+    else if (in==1){
+      rein(c1,c2);
+    }
+    else{
+      run(c1);
+    }
+
+    if(semis==1){
         run(c2);
-      }
+    }
 
       free(args);
 
