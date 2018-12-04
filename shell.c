@@ -60,22 +60,38 @@ void run (char ** args){
   }
 }
 
-//pipe
+//Arguments: readend(left end of pipe), writeend(right end of pipe)
+//Function: redirects the output of the readend into that of the writeend
+//and then executes the writeend
+//Return value : void
 void pipey(char * readend,char * writeend){
   char ** exe = malloc(sizeof(char*));
   exe[0] = writeend;
-  FILE* p = popen(readend,"r");
-  //get file descriptor for stream
-  int fd1 = fileno(p);
-  //buffer location
-  int fd2 = dup(STDIN_FILENO);
-  //redirect file p output into fd1
-  dup2(fd1,STDIN_FILENO);
-  close(fd1);
-  //pclose(p);
-  run(exe);
-  dup2(fd2,STDIN_FILENO);
-  return;
+  int fd[2];
+  pipe(fd);
+  //FILE* p = popen(readend,"r");
+  int out = dup(STDOUT_FILENO);
+  int in = dup(STDIN_FILENO);
+  int uno = fork();
+  if(!uno){
+    int dos = fork();
+    if(!dos){
+        dup2(fd[1],STDOUT_FILENO);
+        close(fd[0]);
+        execvp(&readend[0],&readend);
+        dup2(out,STDOUT_FILENO);
+    }
+    else{
+      wait(NULL);
+      dup2(fd[0],STDIN_FILENO);
+      close(fd[1]);
+      execvp(&writeend[0],&writeend);
+      dup2(in,STDIN_FILENO);
+    }
+}
+  else{//parent
+    wait(NULL);
+  }
 }
 
 //Arguments: nada
@@ -91,58 +107,72 @@ int main(){
    int i =0;
    int j =0;
    int semis=0;
-
+   int counter = 0;
+   //find size of args
+   while(args[counter]){
+     counter ++;
+   }
    char ** c1 = calloc(10, sizeof(char*));
    char ** c2 = calloc(10, sizeof(char*));
 
-   //check for vertical bar
-   char * checkpipe;
-   const char bar = '|';
-   for(int w = 0;w < (sizeof(args)/sizeof(args[0])); w++){
-     checkpipe = strchr(args[w],bar);
-     if (checkpipe != NULL){
-       break;
-     }
-   }
-   if (checkpipe != NULL){
-     char * left = malloc(15);
-     strcpy(left,args[0]);
-     int q = 2;
-     while(strcmp(args[q],"|") != 0){
-       strcat(left,args[q]);
-       q ++;
-     }
-     char * right = malloc(15);
-     strcpy(right,args[q]);
-     while(args[q]){
-       strcat(right,args[q]);
-     }
-     pipey(left,right);
-     return 0;
-   }
+      while(args[i]){
+        if (semis == 0) {
+   				if (strcmp(args[i], ";") == 0) {
+   					semis = 1;
+   				}
+   				else {
+   					c1[i] = args[i];
+   				}
+   			}
+   			if (semis == 1 && strcmp(args[i], ";") != 0) {
+   				c2[j] = args[i];
+   				j++;
+   			}
+   			i++;
+      }
+      run(c1);
 
-   while(args[i]){
-     if (semis == 0) {
-				if (strcmp(args[i], ";") == 0) {
-					semis = 1;
-				}
-				else {
-					c1[i] = args[i];
-				}
-			}
-			if (semis == 1 && strcmp(args[i], ";") != 0) {
-				c2[j] = args[i];
-				j++;
-			}
-			i++;
+      if(semis==1){
+        run(c2);
+      }
+
+      free(args);
+
    }
-   run(c1);
-
-   if(semis==1){
-     run(c2);
    }
-
-   free(args);
-
-}
-}
+ //   //check for vertical bar
+ // CODE DOESNT WORK OVER HERE :(
+ //   char * checkpipe;
+ //   const char bar = '|';
+ //   for(int w = 0;w < counter; w++){
+ //     checkpipe = strchr(args[w],bar);
+ //     printf("%s\n",args[0]);
+ //     printf("%s\n",args[1]);
+ //     printf("%s\n",args[2]);
+ //     printf("%d\n",counter);
+ //     if (checkpipe != NULL){
+ //
+ //       char * left = malloc(25*sizeof(char));
+ //       strcpy(left,args[0]);
+ //       int q = 2;
+ //
+ //       while(strcmp(args[q],"|") != 0){
+ //         strcat(left,args[q]);
+ //         printf("%s", args[q]);
+ //         q ++;
+ //       }
+ //       strcat(left,'\0');
+ //
+ //     char * right = malloc(15*sizeof(char));
+ //     q++;
+ //     printf("hello\n");
+ //     printf("%d",q);
+ //     strcpy(right,args[q]);
+ //     while(args[q]){
+ //       strcat(right,args[q]);
+ //     }
+ //     strcat(right,'\0');
+ //     pipey(left,right);
+ //     return 0;
+ //   }
+ // }
