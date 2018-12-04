@@ -4,16 +4,16 @@ By Kathleen Wong and Tiffany Zhong
 ## Features:
 * Able to fork and execute basic commands like ls, echo, cd and exit.
 * Can run and execute lines with semicolons. 
-* The pipes are almost functional.
 	
 ## Attempted:
 
-* The following did not end up working, but have been left in the code, commented out.
+* The following did not end up working, but have been left in the code, commented out:
 * Could not get redirection to work.
-
+* Attempted to write the code for piping, but kept on recieving "ls: wc: No such file or directory
+ls: |: No such file or directory".
 ## Bugs:
-
-* On occasion the exit command will not work unless entered in a consecutive number of times.
+* On occasion the exit command will act a bit wonky, but for a majority of the time it works fine. 
+* When typing in one word commands, such as ls, the program will not run if you add a space to ls before you press enter. Very white space sensitive! 
 	
 ## Files & Function Headers:
 
