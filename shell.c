@@ -60,14 +60,23 @@ void run (char ** args){
   }
 }
 
-// void pipey(char * readend,char * writeend){
-//   int pipe1[2];
-//   read(pipe1[0],readend,sizeof(readend));
-//   write(pipe1[1],writeend,sizeof(writeend));
-//   close(fd[0]);
-//   close(fd[1]);
-//
-// }
+//pipe
+void pipey(char * readend,char * writeend){
+  char ** exe = malloc(sizeof(char*));
+  exe[0] = writeend;
+  FILE* p = popen(readend,"r");
+  //get file descriptor for stream
+  int fd1 = fileno(p);
+  //buffer location
+  int fd2 = dup(STDIN_FILENO);
+  //redirect file p output into fd1
+  dup2(fd1,STDIN_FILENO);
+  close(fd1);
+  //pclose(p);
+  run(exe);
+  dup2(fd2,STDIN_FILENO);
+  return;
+}
 
 //Arguments: nada
 //Function: if there is a semicolon, splits args into two different
@@ -85,6 +94,32 @@ int main(){
 
    char ** c1 = calloc(10, sizeof(char*));
    char ** c2 = calloc(10, sizeof(char*));
+
+   //check for vertical bar
+   char * checkpipe;
+   const char bar = '|';
+   for(int w = 0;w < (sizeof(args)/sizeof(args[0])); w++){
+     checkpipe = strchr(args[w],bar);
+     if (checkpipe != NULL){
+       break;
+     }
+   }
+   if (checkpipe != NULL){
+     char * left = malloc(15);
+     strcpy(left,args[0]);
+     int q = 2;
+     while(strcmp(args[q],"|") != 0){
+       strcat(left,args[q]);
+       q ++;
+     }
+     char * right = malloc(15);
+     strcpy(right,args[q]);
+     while(args[q]){
+       strcat(right,args[q]);
+     }
+     pipey(left,right);
+     return 0;
+   }
 
    while(args[i]){
      if (semis == 0) {
